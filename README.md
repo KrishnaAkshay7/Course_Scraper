@@ -1,3 +1,4 @@
+**Course Scraper for Indian Colleges**
 Course Scraper for Indian Colleges
 Introduction
 This document explains the Python script used to scrape the list of courses offered by different colleges in India. The script takes either the name of the college or the URL of the college's course page as input and returns a list of all courses offered by that college.
