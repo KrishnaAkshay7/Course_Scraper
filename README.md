@@ -1,28 +1,30 @@
+Course Scraper for Indian Colleges
+Introduction
+This document explains the Python script used to scrape the list of courses offered by different colleges in India. The script takes either the name of the college or the URL of the college's course page as input and returns a list of all courses offered by that college.
+Requirements
+The script requires the following Python libraries:
+•	1. requests
+•	2. beautifulsoup4
+Installation
+Install the required libraries using pip:
+pip install requests beautifulsoup4
+Script Explanation
+The script consists of a function named `get_courses` that takes the URL of the college's course page as an input and returns a list of courses offered by the college.
+Code
+
 import requests
 from bs4 import BeautifulSoup
 
 def get_courses(college_url):
     try:
-        # Set headers to mimic a browser visit
         headers = {'User-Agent': 'Mozilla/5.0'}
-        
-        # Send a request to the college course page
         response = requests.get(college_url, headers=headers)
         
-        # Check if the request was successful
         if response.status_code != 200:
             raise Exception(f"Failed to fetch the page. Status code: {response.status_code}")
         
-        # Parse the HTML content using BeautifulSoup
         soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Extract courses (this part may vary depending on the actual structure of the website)
-        # Example assumes courses are listed in <li> elements within a <ul> with a specific class
-        courses = []
-        for course in soup.find_all('li'):  # Adjust 'li' to match the actual HTML structure
-            course_name = course.get_text(strip=True)
-            if course_name:  # Only add non-empty course names
-                courses.append(course_name)
+        courses = [course.get_text(strip=True) for course in soup.find_all('li') if course.get_text(strip=True)]
         
         if not courses:
             print("No courses found on the page.")
@@ -40,5 +42,22 @@ if courses:
     print("Courses offered:")
     for i, course in enumerate(courses, start=1):
         print(f"{i}. {course}")
-else:
-    print("No courses found or an error occurred.")
+    else:
+        print("No courses found or an error occurred.")
+    
+Example Usage
+To run the script, copy the code into a Python file (e.g., `course_scraper.py`) and run it from the command line or an IDE.
+Command to run the script:
+python course_scraper.py
+Output
+The script will output a list of courses offered by the college. The output will be printed in the console.
+Example output:
+
+Courses offered:
+1. Bachelor of Arts (Honours) in English
+2. Bachelor of Arts (Honours) in History
+3. Bachelor of Science (Honours) in Physics
+4. ...and so on.
+
+Conclusion
+This script is a simple yet effective tool for scraping course information from college websites. It can be adapted to work with different websites by adjusting the HTML parsing logic.
