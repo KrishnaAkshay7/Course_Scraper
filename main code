@@ -1,0 +1,54 @@
+import requests
+from bs4 import BeautifulSoup
+
+def get_programmes_offered(url):
+    try:
+        # Send a GET request to the URL
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
+            return []
+
+        # Parse the HTML content of the page
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Find the "PROGRAMMES OFFERED" section
+        programmes_offered_section = soup.find('span', string="PROGRAMMES OFFERED")
+        
+        if programmes_offered_section:
+            # Find the first <strong> tag with "Undergraduate Programmes" within the same section
+            ug_programmes_heading = programmes_offered_section.find_next('strong', string="Undergraduate Programmes")
+            
+            if ug_programmes_heading:
+                # Navigate to the parent element that might contain the actual list
+                parent_element = ug_programmes_heading.find_parent('p')
+
+                programmes = []
+                if parent_element:
+                    # Find all the text following this heading (e.g., <ul>, <ol>, or <p> elements)
+                    programmes_list = parent_element.find_next_siblings(['p', 'ul', 'ol'])
+
+                    # Extract text from each found element
+                    for programme in programmes_list:
+                        programme_name = programme.get_text(strip=True)
+                        if programme_name:
+                            programmes.append(programme_name)
+                            
+                return programmes
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []
+
+# Example usage
+college_url = "https://www.ststephens.edu/courses-offered/"
+programmes = get_programmes_offered(college_url)
+
+if programmes:
+    print("Programmes offered:")
+    for i, programme in enumerate(programmes, start=1):
+        print(f"{i}. {programme}")
+else:
+    print("No programmes found or an error occurred.")
